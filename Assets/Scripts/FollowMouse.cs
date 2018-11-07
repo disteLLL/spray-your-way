@@ -8,7 +8,7 @@ public class FollowMouse : MonoBehaviour {
     void Update () {
 
         Vector3 pos = Input.mousePosition;
-        pos.z = transform.position.z - Camera.main.transform.position.z;
+        pos.z = -2f;
         transform.position = Camera.main.ScreenToWorldPoint(pos);
     }
 }
