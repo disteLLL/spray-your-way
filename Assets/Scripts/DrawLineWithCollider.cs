@@ -7,17 +7,23 @@ public class DrawLineWithCollider : MonoBehaviour
 
     private EdgeCollider2D collider;
     private Camera camera;
-    private List<Vector2> points;
+    private List<Vector3> points;
     private LineRenderer currentLine;
+    private Vector3 position;
+    private Renderer renderer;
 
     void Awake() {
         if (camera == null) {
             CreateDefaultCamera();
         }
-        points = new List<Vector2>();
+        points = new List<Vector3>();
+        renderer = GetComponent<Renderer>();
     }
 
     void Update() {
+        position = renderer.bounds.center;
+        Debug.DrawRay(position, Vector3.forward*2, Color.red);
+
         if (Input.GetMouseButtonDown(0)) {
             CreateLine();
         }
@@ -31,12 +37,12 @@ public class DrawLineWithCollider : MonoBehaviour
 
     private void CreateLine() {
         currentLine = new GameObject("Line").AddComponent<LineRenderer>();
-        currentLine.material = new Material(Shader.Find("Particles/Additive"));
+        currentLine.material = new Material(Shader.Find("Sprites/Default"));
         currentLine.positionCount = 0;
-        currentLine.startWidth = 0.1f;
-        currentLine.endWidth = 0.1f;
-        currentLine.startColor = Color.white;
-        currentLine.endColor = Color.white;
+        currentLine.startWidth = 0.15f;
+        currentLine.endWidth = 0.15f;
+        currentLine.startColor = Color.red;
+        currentLine.endColor = Color.red;
         currentLine.useWorldSpace = true;
 
         collider = currentLine.gameObject.AddComponent<EdgeCollider2D>();
@@ -44,13 +50,15 @@ public class DrawLineWithCollider : MonoBehaviour
     }
 
     private void UpdateLine() {
-        Vector2 mousePosition = camera.ScreenToWorldPoint(Input.mousePosition);
-        if (!points.Contains(mousePosition)) {
-            points.Add(mousePosition);
+        
+        position.z = 0;
+
+        if (!points.Contains(position)) {
+            points.Add(position);
             currentLine.positionCount = points.Count;
-            currentLine.SetPosition(currentLine.positionCount - 1, mousePosition);
+            currentLine.SetPosition(currentLine.positionCount - 1, position);
             if (collider != null && points.Count > 1) {
-                collider.points = points.ToArray();
+                collider.points = ToVector2Array(points.ToArray());
             }
         }
     }
@@ -68,6 +76,21 @@ public class DrawLineWithCollider : MonoBehaviour
         if (camera == null) {
             camera = gameObject.AddComponent<Camera>();
         }
-        camera.orthographic = true;
+    }
+
+    private Vector3 GetWorldPositionOnPlane(Vector3 screenPosition, float z) {
+        Ray ray = Camera.main.ScreenPointToRay(screenPosition);
+        Plane xy = new Plane(Vector3.forward, new Vector3(0, 0, z));
+        float distance;
+        xy.Raycast(ray, out distance);
+        return ray.GetPoint(distance);
+    }
+
+    private Vector2[] ToVector2Array(Vector3[] input) {
+        Vector2[] output = new Vector2[input.Length];
+        for(int i = 0; i<input.Length; i++) {
+            output[i] = input[i];
+        }
+        return output;
     }
 }
