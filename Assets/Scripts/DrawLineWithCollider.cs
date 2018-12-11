@@ -4,25 +4,25 @@ using UnityEngine;
 
 public class DrawLineWithCollider : MonoBehaviour
 {
+    public GameObject cursorPrefab;
+    public float maxCursorDistance = 20f;
 
     private EdgeCollider2D collider;
     private Camera camera;
     private List<Vector3> points;
     private LineRenderer currentLine;
     private Vector3 position;
-    private Renderer renderer;
+    private GameObject cursorInstance;
 
     void Awake() {
-        if (camera == null) {
-            CreateDefaultCamera();
-        }
+        CreateDefaultCamera();
         points = new List<Vector3>();
-        renderer = GetComponent<Renderer>();
+        cursorInstance = Instantiate(cursorPrefab);
     }
 
     void Update() {
-        position = renderer.bounds.center;
-        Debug.DrawRay(position, Vector3.forward*2, Color.red);
+
+        UpdateCursor();
 
         if (Input.GetMouseButtonDown(0)) {
             CreateLine();
@@ -35,12 +35,32 @@ public class DrawLineWithCollider : MonoBehaviour
         }
     }
 
+    private void UpdateCursor() {
+
+        Transform canTransform = camera.transform;
+        Ray ray = new Ray(canTransform.position, canTransform.forward);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit)) {
+            position = hit.point;
+            cursorInstance.transform.position = hit.point;
+            cursorInstance.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+        }
+        else {
+            currentLine = null;
+            points.Clear();
+            cursorInstance.transform.position = ray.origin + ray.direction.normalized * maxCursorDistance;
+            cursorInstance.transform.rotation = Quaternion.FromToRotation(Vector3.up, -ray.direction);
+        }
+    }
+
     private void CreateLine() {
         currentLine = new GameObject("Line").AddComponent<LineRenderer>();
+        currentLine.transform.parent = GameObject.FindGameObjectWithTag("ImageTarget").transform;
         currentLine.material = new Material(Shader.Find("Sprites/Default"));
         currentLine.positionCount = 0;
-        currentLine.startWidth = 0.15f;
-        currentLine.endWidth = 0.15f;
+        currentLine.startWidth = 0.5f;
+        currentLine.endWidth = 0.5f;
         currentLine.startColor = Color.red;
         currentLine.endColor = Color.red;
         currentLine.useWorldSpace = true;
@@ -76,14 +96,6 @@ public class DrawLineWithCollider : MonoBehaviour
         if (camera == null) {
             camera = gameObject.AddComponent<Camera>();
         }
-    }
-
-    private Vector3 GetWorldPositionOnPlane(Vector3 screenPosition, float z) {
-        Ray ray = Camera.main.ScreenPointToRay(screenPosition);
-        Plane xy = new Plane(Vector3.forward, new Vector3(0, 0, z));
-        float distance;
-        xy.Raycast(ray, out distance);
-        return ray.GetPoint(distance);
     }
 
     private Vector2[] ToVector2Array(Vector3[] input) {
