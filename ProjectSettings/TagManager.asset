@@ -6,6 +6,15 @@ TagManager:
   tags:
   - Sprayhole
   - ImageTarget
+  - Bounds
+  - Finish1
+  - Finish2
+  - Finish3
+  - Finish4
+  - Level1
+  - Level2
+  - Level3
+  - Level4
   layers:
   - Default
   - TransparentFX

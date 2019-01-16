@@ -16,15 +16,15 @@ MonoBehaviour:
     ufoLicenseKey: QVJPMUdRWC8vLy8vQUFBQUtPcGZkVCtZZ1VoMGltOUU2Nm8rMHl1Y1U5c0lGUzdxMWtaeUxRWlIrd1BBYVZmM1laaVVWZFNDa00vejU4c2VHTW5SQ0NvRnRVUmVVRjZXQlJVMFlKOWpuODVGSWNQamRRdUdxLzVUKzBCQ2MyMDVDbGthblVkb1ozK1h1MUQ3K2lKTXp3cURCZ1NLSEFWeHQvNU0rT3VEcUU5azVNQmdYZXMwQThvUnMrbGM1NEp2R084eXJreFd1YUl2bG1LVy9HYUVhcHVYT2hBNkh1STZvQ2ZVT3NoRy9Rd2xuSDU4akxLbE9rbitqZTE5akFNajFUYXlxMkdSNmFCNHpJZnpNeFpLTkdEalpxalgzcFhtVjIybzY3MHpUYnVBWk80a2JwTGtURlJqbG5XZmhEbVdjWGoxZG5TTW1LdkRndlp1bjQrMU12d0tza2hnaTBFamtobElKelVjbVhFaEhocTRlZnU1OUQ2R3ZWRVc=
     delayedInitialization: 0
     cameraDeviceModeSetting: -1
-    maxSimultaneousImageTargets: 1
-    maxSimultaneousObjectTargets: 1
+    maxSimultaneousImageTargets: 2
+    maxSimultaneousObjectTargets: 2
     useDelayedLoadingObjectTargets: 0
     cameraDirection: 0
     mirrorVideoBackground: 0
   digitalEyewear:
     cameraOffset: 0.06
     distortionRenderingLayer: 31
-    eyewearType: 0
+    eyewearType: 2
     stereoFramework: 0
     seeThroughConfiguration: 0
     viewerName: Generic Cardboard
@@ -44,11 +44,11 @@ MonoBehaviour:
       ContainsMagnet: 0
   databaseLoad:
     dataSetsToLoad:
-    - VuforiaMars_Images
-    - VuforiaMars_VuMark
+    - spray-your-way-final
+    - spray-your-way
     dataSetsToActivate:
-    - VuforiaMars_Images
-    - VuforiaMars_VuMark
+    - spray-your-way-final
+    - spray-your-way
   videoBackground:
     clippingMode: 0
     numDivisions: 2
