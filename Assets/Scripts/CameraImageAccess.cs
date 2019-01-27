@@ -225,13 +225,10 @@ public class CameraImageAccess : MonoBehaviour
                         avgX = (avgX / 72) - 5;
                         avgY = (avgY * -0.013875f) + 3.33f;
 
-                        Debug.Log("avgX: " + avgX + "   avgY:  " + avgY);
                         this.transform.localPosition = new Vector3(avgX, avgY, 10);
 
                     }
                     */
-
-
 
     /*
     int distSq(byte x1, byte y1, byte z1, byte x2, byte y2, byte z2) {
