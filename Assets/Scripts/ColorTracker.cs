@@ -73,11 +73,11 @@ public class ColorTracker : MonoBehaviour
 
                 if (image != null) {
 
-#if UNITY_EDITOR
+                #if UNITY_EDITOR
                     inputMat = new Mat(image.Height, image.Width, MatType.CV_8UC1, image.Pixels);
-#else
+                #else
                     inputMat = new Mat(image.Height, image.Width, MatType.CV_8UC3, image.Pixels);   // store the image's pixels in an OpenCV mat                 
-#endif
+                #endif
 
                     Cv2.Resize(inputMat, smallMat, new Size(480, 270)); // resizing for performance reasons (keep aspect ratio!)
                     Cv2.GaussianBlur(smallMat, blurredMat, new Size(11, 11), 0);    // blur image to reduce noise
