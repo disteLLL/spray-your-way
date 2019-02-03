@@ -9,7 +9,10 @@ public class LevelChanger : MonoBehaviour {
     public GameObject level3;
     public GameObject level4;
 
-    private void ChangeLevel() {
+    /// <summary>
+    /// Enabling and disabling the parent GameObjects holding the levels
+    /// </summary>
+    public void ChangeLevel() {
 
         if (level1.activeSelf) {
 
@@ -33,6 +36,9 @@ public class LevelChanger : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Used by the LevelComplete animation to hide itself when finished
+    /// </summary>
     private void DisableSelf() {
 
         this.gameObject.SetActive(false);

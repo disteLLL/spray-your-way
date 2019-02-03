@@ -4,30 +4,24 @@ using System.Linq;
 using Vuforia;
 using OpenCvSharp;
 
-public class CameraImageAccess : MonoBehaviour
+public class ColorTracker : MonoBehaviour
 {
     public Scalar lowerHSVColor = new Scalar(25, 150, 100);
     public Scalar upperHSVColor = new Scalar(35, 255, 255);
-
-    #region PRIVATE_MEMBERS
 
     private Image.PIXEL_FORMAT mPixelFormat = Image.PIXEL_FORMAT.UNKNOWN_FORMAT;
 
     private bool mAccessCameraImage = true;
     private bool mFormatRegistered = false;
-
     
     private Mat inputMat;
     private Mat smallMat = new Mat();
     private Mat blurredMat = new Mat();
-    private Mat rgbMat = new Mat();
     private Mat hsvMat = new Mat();
     private Mat thresholdMat = new Mat();
     private Mat hierarchy = new Mat();
     private Mat[] contours;
-
-    #endregion // PRIVATE_MEMBERS
-
+    
     #region MONOBEHAVIOUR_METHODS
 
     void Start() {
@@ -69,30 +63,25 @@ public class CameraImageAccess : MonoBehaviour
 
     /// <summary>
     /// Called each time the Vuforia state is updated
+    /// Tracks the given color and sets the position and rotation of the spraycan
     /// </summary>
     void OnTrackablesUpdated() {
         if (mFormatRegistered) {
             if (mAccessCameraImage) {
 
-                Vuforia.Image image = CameraDevice.Instance.GetCameraImage(mPixelFormat);
+                Vuforia.Image image = CameraDevice.Instance.GetCameraImage(mPixelFormat);   // get the current camera image in the given pixel format
 
                 if (image != null) {
 
 #if UNITY_EDITOR
                     inputMat = new Mat(image.Height, image.Width, MatType.CV_8UC1, image.Pixels);
-
-                    Cv2.Resize(inputMat, smallMat, new Size(480, 270));
-                    Cv2.GaussianBlur(smallMat, blurredMat, new Size(11, 11), 0);
-                    Cv2.CvtColor(blurredMat, rgbMat, ColorConversionCodes.GRAY2RGB);
-                    Cv2.CvtColor(rgbMat, hsvMat, ColorConversionCodes.RGB2HSV);
 #else
-                    inputMat = new Mat(image.Height, image.Width, MatType.CV_8UC3, image.Pixels);
+                    inputMat = new Mat(image.Height, image.Width, MatType.CV_8UC3, image.Pixels);   // store the image's pixels in an OpenCV mat                 
+#endif
 
                     Cv2.Resize(inputMat, smallMat, new Size(480, 270)); // resizing for performance reasons (keep aspect ratio!)
                     Cv2.GaussianBlur(smallMat, blurredMat, new Size(11, 11), 0);    // blur image to reduce noise
                     Cv2.CvtColor(blurredMat, hsvMat, ColorConversionCodes.RGB2HSV); // convert to HSV colors
-#endif
-
                     Cv2.InRange(hsvMat, lowerHSVColor, upperHSVColor, thresholdMat);    // filter out all pixels matching the given HSV range
 
                     Cv2.Erode(thresholdMat, thresholdMat, Cv2.GetStructuringElement(MorphShapes.Ellipse, new Size(3, 3)), null, 2);  // shave off pixels from blobs to eliminate small blobs
@@ -180,6 +169,8 @@ public class CameraImageAccess : MonoBehaviour
     #endregion //PRIVATE_METHODS
 
     #region LEGACY_CODE
+
+    // First kind of working color tracking attempt
 
     //private byte r2 = 255;
     //private byte g2 = 0;

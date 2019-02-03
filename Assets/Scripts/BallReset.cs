@@ -8,24 +8,21 @@ public class BallReset : MonoBehaviour {
     public GameObject completeLevelUI;
 
     private Rigidbody2D rb;
-    private GameObject lineReset;
+    private TrailDrawer lineReset;
 
     void Start () {
 
         startPosition = this.transform.localPosition;
         rb = GetComponent<Rigidbody2D>();
-        lineReset = GameObject.FindGameObjectWithTag("GameController");
-
+        lineReset = GameObject.FindGameObjectWithTag("GameController").GetComponent<TrailDrawer>();
     }
 
     private void OnCollisionEnter2D(Collision2D collision) {
       
         if(collision.gameObject.tag == "Bounds") {
 
-            this.transform.localPosition = startPosition;
-            rb.velocity = Vector2.zero;
-            rb.angularVelocity = 0;
-            lineReset.GetComponent<DrawLineWithCollider>().points.Clear();
+            ResetBall();
+            lineReset.points.Clear();
         }
     }
 
@@ -33,13 +30,20 @@ public class BallReset : MonoBehaviour {
 
         if (collision.gameObject.tag == "Finish") {
 
-            this.transform.localPosition = startPosition;
-            rb.velocity = Vector2.zero;
-            rb.angularVelocity = 0;
-            lineReset.GetComponent<DrawLineWithCollider>().points.Clear();
+            ResetBall();
+            lineReset.points.Clear();
 
             completeLevelUI.SetActive(true);
-
         }
+    }
+
+    /// <summary>
+    /// Set the ball position to its start position and stop any movement it still had
+    /// </summary>
+    public void ResetBall() {
+
+        this.transform.localPosition = startPosition;
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0;
     }
 }

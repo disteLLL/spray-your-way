@@ -7,12 +7,8 @@ using Vuforia;
 public class ControllerHandler : MonoBehaviour, ITrackableEventHandler
 {
 
-    public GameObject level1;
-    public GameObject level2;
-    public GameObject level3;
-    public GameObject level4;
-
-    private GameObject lineReset;
+    private TrailDrawer lineReset;
+    private LevelChanger levelChanger;
 
     #region PROTECTED_MEMBER_VARIABLES
 
@@ -29,7 +25,8 @@ public class ControllerHandler : MonoBehaviour, ITrackableEventHandler
 
         }
 
-        lineReset = GameObject.FindGameObjectWithTag("GameController");
+        lineReset = GameObject.FindGameObjectWithTag("GameController").GetComponent<TrailDrawer>();
+        levelChanger = GetComponent<LevelChanger>();
     }
 
     protected virtual void OnDestroy() {
@@ -54,59 +51,22 @@ public class ControllerHandler : MonoBehaviour, ITrackableEventHandler
  
             OnTrackingFound();
         }
-        else if (previousStatus == TrackableBehaviour.Status.TRACKED &&
-                 newStatus == TrackableBehaviour.Status.NOT_FOUND) {
-
-            OnTrackingLost();
-        }
-        else {
-            // For combo of previousStatus=UNKNOWN + newStatus=UNKNOWN|NOT_FOUND
-            // Vuforia is starting, but tracking has not been lost or found yet
-            // Call OnTrackingLost() to hide the augmentations
-            OnTrackingLost();
-        }
     }
 
     #endregion // PUBLIC_METHODS
 
     #region PROTECTED_METHODS
 
+    /// <summary>
+    /// Reset the ball position and current drawn line then change the level
+    /// </summary>
     protected virtual void OnTrackingFound() {
 
-        lineReset.GetComponent<DrawLineWithCollider>().points.Clear();
-        GameObject ball = GameObject.FindGameObjectWithTag("Player");
-        Rigidbody2D rb = ball.GetComponent<Rigidbody2D>();
-        Vector3 position = ball.GetComponent<BallReset>().startPosition;
+        BallReset reset = GameObject.FindGameObjectWithTag("Player").GetComponent<BallReset>();
 
-        ball.transform.localPosition = position;
-        rb.velocity = Vector2.zero;
-        rb.angularVelocity = 0;
-
-        if (level1.activeSelf) {
-
-            level1.SetActive(false);
-            level2.SetActive(true);
-        }
-        else if (level2.activeSelf) {
-
-            level2.SetActive(false);
-            level3.SetActive(true);
-        }
-        else if (level3.activeSelf) {
-
-            level3.SetActive(false);
-            level4.SetActive(true);
-        }
-        else if (level4.activeSelf) {
-
-            level4.SetActive(false);
-            level1.SetActive(true);
-        }
-
-    }
-
-    protected virtual void OnTrackingLost() {
-
+        lineReset.points.Clear();
+        reset.ResetBall();
+        levelChanger.ChangeLevel();
     }
 
     #endregion // PROTECTED_METHODS

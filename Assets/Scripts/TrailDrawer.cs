@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using Vuforia;
 
-public class DrawLineWithCollider : MonoBehaviour
+public class TrailDrawer : MonoBehaviour
 {
     public GameObject cursorPrefab;
     public float maxCursorDistance = 20f;
@@ -13,12 +12,13 @@ public class DrawLineWithCollider : MonoBehaviour
     private Vector3 position;
     private GameObject cursorInstance;
     
-
-    void Awake() {
+    void Start() {
 
         points = new List<Vector3>();
         cursorInstance = Instantiate(cursorPrefab);
         CreateLine();
+
+        // Vary the trail lenght by playing with the repeat rates
         InvokeRepeating("UpdateLine", .05f, .01f);
         InvokeRepeating("LineTrailing", .05f, .038f);
     }
@@ -47,15 +47,19 @@ public class DrawLineWithCollider : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Set the position and rotation of the cursor based on a raycast from the spraycan forwards
+    /// </summary>
     private void UpdateCursor() {
 
         Transform canTransform = this.transform;
         Ray ray = new Ray(canTransform.position, canTransform.forward);
         RaycastHit hit;
 
+        // only the planes used as background have a 3D collider
         if (Physics.Raycast(ray, out hit)) {
 
-            position = hit.point;
+            position = hit.point; // used as input point for the line renderer
             cursorInstance.transform.position = hit.point;
             cursorInstance.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
         }
@@ -66,6 +70,9 @@ public class DrawLineWithCollider : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Initialize the line and collider used as a trail
+    /// </summary>
     private void CreateLine() {
 
         currentLine = new GameObject("Line").AddComponent<LineRenderer>();
